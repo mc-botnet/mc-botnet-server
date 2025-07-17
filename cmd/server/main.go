@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"time"
 
 	"github.com/mc-botnet/mc-botnet-server/internal/server"
 )
@@ -16,7 +17,6 @@ func main() {
 		slog.Error(err.Error())
 		os.Exit(1)
 	}
-	defer s.Shutdown(context.Background())
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 
@@ -29,4 +29,12 @@ func main() {
 	}()
 
 	<-ctx.Done()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err = s.Shutdown(ctx)
+	if err != nil {
+		slog.Error(err.Error())
+	}
 }

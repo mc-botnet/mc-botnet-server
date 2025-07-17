@@ -4,24 +4,27 @@ import (
 	"context"
 	"log/slog"
 	"net/http"
+
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 )
 
 type Server struct {
-	// client *kubernetes.Clientset
+	client *kubernetes.Clientset
 
 	httpServer *http.Server
 }
 
 func NewServer() (*Server, error) {
-	// config, err := rest.InClusterConfig()
-	// if err != nil {
-	// 	return nil, err
-	// }
+	config, err := rest.InClusterConfig()
+	if err != nil {
+		return nil, err
+	}
 
-	// client, err := kubernetes.NewForConfig(config)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	client, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		return nil, err
+	}
 
 	mux := http.NewServeMux()
 
@@ -30,7 +33,7 @@ func NewServer() (*Server, error) {
 	})
 
 	return &Server{
-		// client: client,
+		client: client,
 		httpServer: &http.Server{
 			Addr:    ":8080",
 			Handler: mux,
