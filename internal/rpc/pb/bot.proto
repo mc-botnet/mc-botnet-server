@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "github.com/mc-botnet/mc-botnet-server/internal/rpc";
+option go_package = "github.com/mc-botnet/mc-botnet-server/internal/rpc/pb";
 
 import "google/protobuf/empty.proto";
 

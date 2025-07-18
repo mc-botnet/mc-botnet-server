@@ -8,19 +8,18 @@ import (
 )
 
 type Server struct {
-	manager bot.Manager
+	manager *bot.Manager
 
 	httpServer *http.Server
 }
 
-func NewServer(manager bot.Manager) (*Server, error) {
+func NewServer(manager *bot.Manager) (*Server, error) {
 	s := new(Server)
 
 	mux := registerRoutes(s)
 
 	s.manager = manager
 	s.httpServer = &http.Server{
-		Addr:    ":8080",
 		Handler: mux,
 	}
 
@@ -45,8 +44,8 @@ func (s *Server) Shutdown(ctx context.Context) error {
 	return s.httpServer.Shutdown(ctx)
 }
 
-func (s *Server) Run() error {
+func (s *Server) Run(addr string) error {
 	slog.Info("starting server")
-
+	s.httpServer.Addr = addr
 	return s.httpServer.ListenAndServe()
 }
