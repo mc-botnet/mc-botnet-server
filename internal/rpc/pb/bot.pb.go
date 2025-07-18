@@ -122,7 +122,7 @@ const file_bot_proto_rawDesc = "" +
 	"\bAcceptor\x12.\n" +
 	"\x05Ready\x12\r.ReadyRequest\x1a\x16.google.protobuf.Empty24\n" +
 	"\x03Bot\x12-\n" +
-	"\x04Ping\x12\x16.google.protobuf.Empty\x1a\r.PingResponseB4Z2github.com/mc-botnet/mc-botnet-server/internal/rpcb\x06proto3"
+	"\x04Ping\x12\x16.google.protobuf.Empty\x1a\r.PingResponseB7Z5github.com/mc-botnet/mc-botnet-server/internal/rpc/pbb\x06proto3"
 
 var (
 	file_bot_proto_rawDescOnce sync.Once
