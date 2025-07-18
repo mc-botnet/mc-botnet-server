@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option go_package = "github.com/mc-botnet/mc-botnet-server/internal/rpc";
+
+import "google/protobuf/empty.proto";
+
+service Acceptor {
+  rpc Ready(ReadyRequest) returns (google.protobuf.Empty);
+}
+
+service Bot {
+  rpc Ping(google.protobuf.Empty) returns (PingResponse);
+}
+
+message ReadyRequest {
+  string id = 1;
+}
+
+message PingResponse {
+  string payload = 1;
+}

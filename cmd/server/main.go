@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"errors"
+	"github.com/mc-botnet/mc-botnet-server/internal/bot"
 	"log/slog"
 	"net/http"
 	"os"
@@ -12,7 +14,14 @@ import (
 )
 
 func main() {
-	s, err := server.NewServer()
+	mgr, err := bot.NewKubernetesManager()
+	if err != nil {
+		slog.Error(err.Error())
+		os.Exit(1)
+	}
+	defer mgr.Shutdown()
+
+	s, err := server.NewServer(mgr)
 	if err != nil {
 		slog.Error(err.Error())
 		os.Exit(1)
@@ -22,7 +31,7 @@ func main() {
 
 	go func() {
 		err = s.Run()
-		if err != nil && err != http.ErrServerClosed {
+		if err != nil && !errors.Is(http.ErrServerClosed, err) {
 			slog.Error(err.Error())
 		}
 		stop()

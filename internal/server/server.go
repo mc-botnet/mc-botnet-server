@@ -2,43 +2,41 @@ package server
 
 import (
 	"context"
+	"github.com/mc-botnet/mc-botnet-server/internal/bot"
 	"log/slog"
 	"net/http"
-
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/rest"
 )
 
 type Server struct {
-	client *kubernetes.Clientset
+	manager bot.Manager
 
 	httpServer *http.Server
 }
 
-func NewServer() (*Server, error) {
-	config, err := rest.InClusterConfig()
-	if err != nil {
-		return nil, err
+func NewServer(manager bot.Manager) (*Server, error) {
+	s := new(Server)
+
+	mux := registerRoutes(s)
+
+	s.manager = manager
+	s.httpServer = &http.Server{
+		Addr:    ":8080",
+		Handler: mux,
 	}
 
-	client, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		return nil, err
-	}
+	return s, nil
+}
 
+func registerRoutes(s *Server) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /ping", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Pong!"))
+		_, _ = w.Write([]byte("Pong!"))
 	})
 
-	return &Server{
-		client: client,
-		httpServer: &http.Server{
-			Addr:    ":8080",
-			Handler: mux,
-		},
-	}, nil
+	mux.HandleFunc("POST /bot", s.createBot)
+
+	return mux
 }
 
 func (s *Server) Shutdown(ctx context.Context) error {
