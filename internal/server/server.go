@@ -45,7 +45,7 @@ func (s *Server) Shutdown(ctx context.Context) error {
 }
 
 func (s *Server) Run(addr string) error {
-	slog.Info("starting server")
+	slog.Info("starting server", "addr", addr)
 	s.httpServer.Addr = addr
 	return s.httpServer.ListenAndServe()
 }

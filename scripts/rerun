@@ -1,0 +1,7 @@
+#!/usr/bin/bash
+
+kubectl delete pod server
+kubectl delete --all pods --namespace bot
+
+scripts/build
+scripts/start

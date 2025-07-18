@@ -48,6 +48,10 @@ func (r *KubernetesRunner) Start(ctx context.Context, opts *StartOptions) (Runne
 	return &kubernetesRunnerHandle{pod.Name, pods}, nil
 }
 
+func (r *KubernetesRunner) Close(ctx context.Context) error {
+	return r.pods().DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{})
+}
+
 type RunnerHandle interface {
 	Stop(ctx context.Context) error
 }
@@ -62,14 +66,13 @@ func (k *kubernetesRunnerHandle) Stop(ctx context.Context) error {
 }
 
 func (r *KubernetesRunner) pods() typedv1.PodInterface {
-	return r.client.CoreV1().Pods("default")
+	return r.client.CoreV1().Pods("bot")
 }
 
 func toPod(opts *StartOptions, id uuid.UUID, image string) *corev1.Pod {
 	pod := &corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "bot-" + id.String(),
-			Namespace: "default",
+			Name: "bot-" + id.String(),
 		},
 		Spec: corev1.PodSpec{
 			Containers: []corev1.Container{{

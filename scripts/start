@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+
+kubectl run server --image=mc-botnet-server --image-pull-policy=Never --restart=Never

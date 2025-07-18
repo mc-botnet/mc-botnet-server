@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"sync"
 	"syscall"
 	"time"
 
@@ -61,25 +60,16 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	var wg sync.WaitGroup
+	shutdownMany(s.Shutdown, acceptor.Shutdown, runner.Close)
+}
 
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		err := acceptor.Shutdown(ctx)
+func shutdownMany(fns ...func(ctx context.Context) error) {
+	for _, fn := range fns {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		err := fn(ctx)
 		if err != nil {
 			slog.Error(err.Error())
 		}
-	}()
-
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		err := s.Shutdown(ctx)
-		if err != nil {
-			slog.Error(err.Error())
-		}
-	}()
-
-	wg.Wait()
+		cancel()
+	}
 }
